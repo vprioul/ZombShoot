@@ -12,6 +12,8 @@ import org.cocos2d.actions.interval.CCRepeat;
 import org.cocos2d.actions.interval.CCSequence;
 import org.cocos2d.layers.CCLayer;
 import org.cocos2d.layers.CCScene;
+import org.cocos2d.menus.CCMenu;
+import org.cocos2d.menus.CCMenuItemLabel;
 import org.cocos2d.nodes.CCAnimation;
 import org.cocos2d.nodes.CCDirector;
 import org.cocos2d.nodes.CCSprite;
@@ -63,27 +65,41 @@ public class GameScene extends CCLayer {
     	scoreLabel.setPosition( CGPoint.ccp( 250, screenSize.height - 100));
     	addChild(scoreLabel,-2,SCORE_LABEL_TAG);
     	
+    	
+    	
     	Context context = CCDirector.sharedDirector().getActivity();
     	SoundEngine.sharedEngine().preloadEffect(context, R.raw.pew_pew_lei);
     	SoundEngine.sharedEngine().playSound(context, R.raw.background_music_aac, true);
     	
-    	/*CCSprite zombie = CCSprite.sprite("zombie-1.png");
+    	/*CCSprite zombie = CCSprite.sprite("zombieHeadShot.atlas/zombie-HeadShot-1.png");
     	zombie.setScale(3);
     	zombie.setPosition( CGPoint.ccp( screenSize.width - 100, screenSize.height - 100));
     	addChild(zombie);
-    	CCAnimation animation = CCAnimation.animation("walk", 0.1f);
+    	CCAnimation animation = CCAnimation.animation("walk", 0.15f);
         for (int i = 1; i < 8; i++) {
-        	animation.addFrame(CCFormatter.format("zombie-%d.png", i));
+        	animation.addFrame(CCFormatter.format("zombieHeadShot.atlas/zombie-HeadShot-%d.png", i));
             CCIntervalAction animAction = CCAnimate.action(0.2f, animation, false);
             zombie.runAction(animAction);
         }
 
         CCIntervalAction action = CCAnimate.action(animation);
-        zombie.runAction(CCRepeat.action(action, 9));
+        zombie.runAction(CCRepeat.action(action, 1));
     	
     	
     	CCMoveBy act1 = CCMoveBy.action(3, (CGPoint.ccp(-screenSize.width, 0)));
         zombie.runAction(act1);*/
+        
+        /*CCBitmapFontAtlas pauseLabel = CCBitmapFontAtlas.bitmapFontAtlas ("II", "bionic.fnt");
+    	
+        
+        CCMenuItemLabel pauseItem = CCMenuItemLabel.item(pauseLabel , this, "pauseCallback");
+        
+        CCMenu menu = CCMenu.menu() ;
+		menu.addChild(pauseItem);
+		menu.alignItemsHorizontally(20);
+		final CGPoint p = menu.getPositionRef();
+		menu.setPosition(CGPoint.ccpSub(p, CGPoint.ccp(-420,screenSize.height + 100))) ;
+		addChild(menu);*/
         
     	this.schedule("gameLogic", 1.0f);
     	this.schedule("update");
@@ -111,7 +127,7 @@ public class GameScene extends CCLayer {
 	    _targets.add(target);
 
 	    CCAnimation animation = CCAnimation.animation("walk", 0.1f);
-        for (int i = 1; i < 8; i++) {
+        for (int i = 1; i <= 8; i++) {
         	animation.addFrame(CCFormatter.format("zombie-%d.png", i));
             CCIntervalAction animAction = CCAnimate.action(0.2f, animation, false);
             target.runAction(animAction);
@@ -148,8 +164,24 @@ public class GameScene extends CCLayer {
 	        _projectilesDestroyed = 0;
 	        CCDirector.sharedDirector().replaceScene(GameOverLayer.scene("Perdu !! Ton score est de "+score));
 	    }
-	    else if (sprite.getTag() == 2)
+	    else if (sprite.getTag() == 2){
 	        _projectiles.remove(sprite);
+	    /*CCSprite zombie = CCSprite.sprite("zombieHeadShot.atlas/zombie-HeadShot-8.png");
+    	zombie.setScale(3);
+    	zombie.setPosition(10,10);
+    	addChild(zombie);
+    	CCAnimation animation = CCAnimation.animation("walk", 0.15f);
+        for (int i = 1; i <= 8; i++) {
+        	animation.addFrame(CCFormatter.format("zombieHeadShot.atlas/zombie-HeadShot-%d.png", i));
+            CCIntervalAction animAction = CCAnimate.action(0.2f, animation, false);
+            zombie.runAction(animAction);
+        }
+
+        CCIntervalAction action = CCAnimate.action(animation);
+        zombie.runAction(CCRepeat.action(action, 1));*/
+
+        //removeChild(zombie,true);
+	    }
 	}
 	
 	public void gameLogic(float dt)
@@ -217,8 +249,8 @@ public class GameScene extends CCLayer {
 	 
 	    for (CCSprite projectile : _projectiles)
 	    {
-	        CGRect projectileRect = CGRect.make(projectile.getPosition().x - (projectile.getContentSize().width / 2.0f),
-	                                            projectile.getPosition().y - (projectile.getContentSize().height / 2.0f),
+	        CGRect projectileRect = CGRect.make(projectile.getPosition().x - (projectile.getContentSize().width),
+	                                            projectile.getPosition().y - (projectile.getContentSize().height),
 	                                            projectile.getContentSize().width,
 	                                            projectile.getContentSize().height);
 	 
@@ -226,21 +258,21 @@ public class GameScene extends CCLayer {
 	 
 	        for (CCSprite target : _targets)
 	        {
-	            CGRect targetRect = CGRect.make(target.getPosition().x - (target.getContentSize().width),
-	                                            target.getPosition().y - (target.getContentSize().height),
+	            CGRect targetRect = CGRect.make(target.getPosition().x - (target.getContentSize().width / 2),
+	                                            target.getPosition().y - (target.getContentSize().height /2),
 	                                            target.getContentSize().width,
 	                                            target.getContentSize().height);
 	 
 	            if (CGRect.intersects(projectileRect, targetRect)){
 	                targetsToDelete.add(target);
 
-		            /*CCSprite zombie = CCSprite.sprite("zombieHeadShot.atlas/zombieHeadShot-1.png");
+		           /* CCSprite zombie = CCSprite.sprite("zombieHeadShot.atlas/zombie-HeadShot-1.png");
 		        	zombie.setScale(3);
 		        	zombie.setPosition(target.getPosition());
 		        	addChild(zombie);
 		        	CCAnimation animation = CCAnimation.animation("walk", 0.1f);
 		            for (int i = 1; i < 8; i++) {
-		            	animation.addFrame(CCFormatter.format("zombieHeadShot.atlas/zombieHeadShot-%d.png", i));
+		            	animation.addFrame(CCFormatter.format("zombieHeadShot.atlas/zombie-HeadShot-%d.png", i));
 		                CCIntervalAction animAction = CCAnimate.action(0.2f, animation, false);
 		                zombie.runAction(animAction);
 		            }
@@ -265,6 +297,7 @@ public class GameScene extends CCLayer {
 	    {
 	    	score=score+10;
 	    	scorelabel.setString("Score : " + CCFormatter.format("%03d", score));
+	    	//position=projectile.getPosition();
 	        _projectiles.remove(projectile);
 	        removeChild(projectile, true);
 	        if (++_projectilesDestroyed >= 5)
@@ -292,6 +325,11 @@ public class GameScene extends CCLayer {
      
     return true ;
     }*/
+	
+	/*public void pauseCallback(Object sender) {
+		CCDirector.sharedDirector().onPause();
+		
+	}*/
 	
 	public static CCScene scene()
     {

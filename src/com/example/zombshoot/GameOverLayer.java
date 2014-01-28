@@ -4,8 +4,13 @@ import org.cocos2d.actions.interval.CCDelayTime;
 import org.cocos2d.actions.interval.CCSequence;
 import org.cocos2d.layers.CCColorLayer;
 import org.cocos2d.layers.CCScene;
+import org.cocos2d.menus.CCMenu;
+import org.cocos2d.menus.CCMenuItemLabel;
 import org.cocos2d.nodes.CCDirector;
 import org.cocos2d.nodes.CCLabel;
+import org.cocos2d.nodes.CCNode;
+import org.cocos2d.opengl.CCBitmapFontAtlas;
+import org.cocos2d.types.CGPoint;
 import org.cocos2d.types.CGSize;
 import org.cocos2d.types.ccColor3B;
 import org.cocos2d.types.ccColor4B;
@@ -26,7 +31,7 @@ public class GameOverLayer extends CCColorLayer
         layer.getLabel().setString(message);
  
         scene.addChild(layer);
- 
+        
         return scene;
     }
  
@@ -48,6 +53,17 @@ public class GameOverLayer extends CCColorLayer
         _label.setPosition(winSize.width / 2.0f, winSize.height / 2.0f);
         addChild(_label);
  
+        CCBitmapFontAtlas playLabel = CCBitmapFontAtlas.bitmapFontAtlas ("Rejouer", "bionic.fnt");
+    	
+        
+        CCMenuItemLabel playItem = CCMenuItemLabel.item(playLabel , this, "playCallback");
+        
+        CCMenu menu = CCMenu.menu() ;
+		menu.addChild(playItem);
+		menu.alignItemsVertically(20);
+		final CGPoint p = menu.getPositionRef();
+		menu.setPosition(CGPoint.ccpSub(p, CGPoint.ccp(-420,0))) ;
+		addChild(menu);
         //this.runAction(CCSequence.actions(CCDelayTime.action(10.0f), CCCallFunc.action(this, "gameOverDone")));
     }
  
@@ -56,11 +72,17 @@ public class GameOverLayer extends CCColorLayer
         CCDirector.sharedDirector().replaceScene(GameScene.scene());
     }
  
-    @Override
-    public boolean ccTouchesEnded(MotionEvent event)
+    //@Override
+    /*public boolean ccTouchesEnded(MotionEvent event)
     {
         gameOverDone();
  
         return true;
-    }
+    }*/
+    
+    public void playCallback(Object sender) {
+    	gameOverDone();
+		
+	}
+    
 }
